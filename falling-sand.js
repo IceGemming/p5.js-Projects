@@ -1,3 +1,5 @@
+// Walkthrough from "The Coding Train :Challenge #180
+
 function make2DArray(cols, rows) {
   let arr = new Array(cols);
   for (let i = 0; i < arr.length; i++) {
