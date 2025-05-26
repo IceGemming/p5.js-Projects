@@ -1,4 +1,6 @@
-// Walkthrough from "The Coding Train :Challenge #180
+let grid;
+let side_len = 5;
+let cols, rows;
 
 function make2DArray(cols, rows) {
   let arr = new Array(cols);
@@ -11,15 +13,6 @@ function make2DArray(cols, rows) {
   return arr;
 }
 
-let grid;
-let velocityGrid;
-
-let side_len = 5;
-let cols, rows;
-let hueValue = 200;
-
-let gravity = 0.1;
-
 function withinCols(i) {
   return i >= 0 && i <= cols - 1;
 }
@@ -29,94 +22,78 @@ function withinRows(j) {
 }
 
 function setup() {
-  createCanvas(600, 500);
-  colorMode(HSB, 360, 255, 255);
+  createCanvas(600, 600);
   cols = width / side_len;
   rows = height / side_len;
   grid = make2DArray(cols, rows);
-  velocityGrid = make2DArray(cols, rows, 1);
 }
 
-function mouseDragged() {}
-
 function draw() {
-  background(0);
+  background('rgb(71,154,255)');
+  
+  for (let i = 0; i < cols; i++) {
+    for (let j = 0; j < rows; j++) {
+      noStroke();
+      if (grid[i][j]) {
+        fill('rgb(255,241,131)');
+        square(i * side_len, j * side_len, side_len);
+      }
+    }
+  }
+  
+  if(mouseIsPressed){
+    let xpos = floor(mouseX / side_len);
+    let ypos = floor(mouseY / side_len);
 
-  if (mouseIsPressed) {
-    let mouseCol = floor(mouseX / side_len);
-    let mouseRow = floor(mouseY / side_len);
-    
     let matrix = 5;
     let extent = floor(matrix / 2);
     for (let i = -extent; i <= extent; i++) {
       for (let j = -extent; j <= extent; j++) {
         if (random(1) < 0.75) {
-          let col = mouseCol + i;
-          let row = mouseRow + j;
+          let col = xpos + i;
+          let row = ypos + j;
           if (withinCols(col) && withinRows(row)) {
-            grid[col][row] = hueValue;
-            velocityGrid[col][row] = 1;
+            grid[col][row] = 1;
           }
         }
       }
-    }
-    hueValue += 0.5;
-    if (hueValue > 360) {
-      hueValue = 1;
     }
   }
   
-  for (let i = 0; i < cols; i++) {
-    for (let j = 0; j < rows; j++) {
-      noStroke();
-      if (grid[i][j] > 0) {
-        fill(grid[i][j], 255, 255);
-        let x = i * side_len;
-        let y = j * side_len;
-        square(x, y, side_len);
-      }
-    }
-  }
-
   let nextGrid = make2DArray(cols, rows);
-  let nextVelocityGrid = make2DArray(cols, rows);
 
   for (let i = 0; i < cols; i++) {
-    for (let j = 0; j < rows; j++) {
-      let state = grid[i][j];
-      let velocity = velocityGrid[i][j];
-      let moved = false;
-      if (state > 0) {
-        let newPos = int(j + velocity);
-        for (let y = newPos; y > j; y--) {
-          let below = grid[i][y];
-          let dir = 1;
-          if (random(1) < 0.5) {
-            dir *= -1;
-          }
-          let belowA = -1;
-          if (withinCols(i + dir)) belowA = grid[i + dir][y];
-
-          if (below === 0) {
-            nextGrid[i][y] = state;
-            nextVelocityGrid[i][y] = velocity + gravity;
-            moved = true;
-            break;
-          } else if (belowA === 0) {
-            nextGrid[i + dir][y] = state;
-            nextVelocityGrid[i + dir][y] = velocity + gravity;
-            moved = true;
-            break;
-          } 
+    for (let j = 0; j < rows ; j++) {
+      
+      if (grid[i][j] == 1) {
+        let below = grid[i][j + 1];
+        
+        let dir = 1;
+        if (random(1) < 0.5) {
+          dir *= -1;
         }
-      }
-
-      if (state > 0 && !moved) {
-        nextGrid[i][j] = grid[i][j];
-        nextVelocityGrid[i][j] = velocityGrid[i][j] + gravity;
+        
+        let belowA;
+        let belowB;
+        if (withinCols(i + dir)) {
+          belowA = grid[i + dir][j + 1];
+        }
+        if (withinCols(i - dir)) {
+          belowB = grid[i - dir][j + 1];
+        }
+        
+        
+        if (below== 0) {
+          nextGrid[i][j + 1] = 1;
+        } else if (belowA== 0) {
+          nextGrid[i + dir][j + 1] = 1;
+        } else if (belowB== 0) {
+          nextGrid[i - dir][j + 1] = 1;
+        } else {
+          nextGrid[i][j] = 1;
+        }
       }
     }
   }
   grid = nextGrid;
-  velocityGrid = nextVelocityGrid;
 }
