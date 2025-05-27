@@ -7,7 +7,7 @@ function make2DArray(cols, rows) {
   for (let i = 0; i < arr.length; i++) {
     arr[i] = new Array(rows);
     for (let j = 0; j < arr[i].length; j++) {
-      arr[i][j] = 0;
+      arr[i][j] = false;
     }
   }
   return arr;
@@ -53,7 +53,7 @@ function draw() {
           let col = xpos + i;
           let row = ypos + j;
           if (withinCols(col) && withinRows(row)) {
-            grid[col][row] = 1;
+            grid[col][row] = true;
           }
         }
       }
@@ -65,7 +65,7 @@ function draw() {
   for (let i = 0; i < cols; i++) {
     for (let j = 0; j < rows ; j++) {
       
-      if (grid[i][j] == 1) {
+      if (grid[i][j] == true) {
         let below = grid[i][j + 1];
         
         let dir = 1;
@@ -83,14 +83,14 @@ function draw() {
         }
         
         
-        if (below== 0) {
-          nextGrid[i][j + 1] = 1;
-        } else if (belowA== 0) {
-          nextGrid[i + dir][j + 1] = 1;
-        } else if (belowB== 0) {
-          nextGrid[i - dir][j + 1] = 1;
+        if (below== false) {
+          nextGrid[i][j + 1] = true;
+        } else if (belowA== false) {
+          nextGrid[i + dir][j + 1] = true;
+        } else if (belowB== false) {
+          nextGrid[i - dir][j + 1] = true;
         } else {
-          nextGrid[i][j] = 1;
+          nextGrid[i][j] = true;
         }
       }
     }
